@@ -1,69 +1,125 @@
-# 生成、读取、修改、解包 .larc 文件的工具类
+# -*- coding: utf-8 -*-
+# 这是 .larc 文件格式的 Python tool API
 
-defautl_version = "0.1.0"
+# 工具默认版本，格式为 [修订版本号, 次版本号, 主版本号]：0.1.0
+tool_default_version:list[int] = [0, 1, 0]
+# .larc 文件格式的文件头
+larc_file_header:bytearray = bytearray([0x01, 0x4c, 0x41, 0x52, 0x43, 0x02])
 
-class LarcFile:
+class FileInfo:
+	"""
+	文件信息类
+	"""
+	file_num:int = 0
+	file_head:int = 0
+	file_long:int = 0
+	file_name:str = ""
+
+class LarcTool:
+	"""
+	这是一个 .larc 文件格式的 Python tool API
+	"""
+	larc_file:object = None
 	file_path:str = ""
-	tool_version:str = ""
-	larc_file = None
+	file_version:list[int] = [0, 0, 0]
+	array_head:int = 0
+	array_long:int = 0
+	files_count:int = 0
+	files_long:int = 0
+	files_array:list[FileInfo] = []
+
+	def __init__():
+		"""
+		无参数初始化对象
+		"""
+		pass
 
 	def __init__(self, file_path:str):
+		"""
+		用文件路径初始化对象
+		:param file_path: 文件路径
+		该函数会调用 :func:`open_file` 函数打开文件
+		"""
+		self.open_file(file_path)
+	
+	def open_file(self, file_path:str) -> bool:
+		"""
+		打开一个文件
+		:param file_path: 文件路径
+		:return: 是否异常
+		该函数会调用 :func:`read_files_array` 函数读取文件列表数组
+		"""
 		self.file_path = file_path
-		self.tool_version = defautl_version
-	
-	def open(self) -> None:
-		"""
-		打开 .larc 文件
-		"""
-		if self.file_path.endswith(".larc") == False:
-			raise ValueError("File path must end with .larc")
-		larc_file = open(self.file_path, "rb+")
-		if larc_file is None:
-			raise IOError("Failed to open file: " + self.file_path)
-		self.larc_file = larc_file
-		return 
-	
-	def open_new(self, version:str = defautl_version) -> None:
-		"""
-		创建一个新的 .larc 文件
-		"""
-		if self.file_path.endswith(".larc") == False:
-			raise ValueError("File path must end with .larc")
-		self.larc_file = open(self.file_path, "wb+")
-		self.tool_version = version
-		if self.larc_file is None:
-			raise IOError("Failed to create file: " + self.file_path)
-		# 写入文件头等信息
-		self.larc_file.write(b"LARC")	 									# 文件头
-		self.larc_file.write(version.encode())								# 工具版本
-		self.larc_file.write((0).to_bytes(2+2+1+4, byteorder='little'))		# 记录列表的头地址、长度和总文件数、总长度
-		# 记录列表的数据
-		list_start:int = len(b"LARC") + len(version.encode()) + (2+2+1+4)
-		self.larc_file.seek(len(b"LARC") + len(version.encode()))
-		self.larc_file.write(list_start.to_bytes(2, byteorder='little'))	# 记录列表的头地址
-		# 刷新缓冲区
-		self.larc_file.flush()
-		return
-	
-	def close(self):
-		"""
-		关闭 .larc 文件
-		"""
-		if self.larc_file is not None:
-			self.larc_file.close()
-			self.larc_file = None
-		else:
-			raise IOError("File is not open: " + self.file_path)
-		return
+		try:
+			self.larc_file = open(self.file_path, "rb+")
+		except:
+			print("打开文件失败")
+			return True
+		if self.larc_file.read(6) != larc_file_header:
+			print("文件头错误")
+			return True
+		self.file_version = self.larc_file.read(3)
+		if self.file_version[2] != tool_default_version[2]:
+			print("主版本号不一致，无法打开")
+			return True
+		if self.file_version[1] != tool_default_version[1]:
+			print("次版本号不一致，建议更换对应版本的工具")
+		self.array_head = int.from_bytes(self.larc_file.read(4), byteorder="little")
+		self.array_long = int.from_bytes(self.larc_file.read(4), byteorder="little")
+		self.files_count = int.from_bytes(self.larc_file.read(4), byteorder="little")
+		self.files_long = int.from_bytes(self.larc_file.read(4), byteorder="little")
+		return self.read_files_array()
 
-if __name__ == "__main__":
-	# 测试代码
-	larc = LarcFile("test.larc")
-	try:
-		larc.open_new()
-		print("New LARC file created successfully.")
-	except Exception as e:
-		print("Error:", e)
-	finally:
-		larc.close()
-		print("LARC file closed.")
+	def read_files_array(self) -> bool:
+		"""
+		读取文件列表的数组
+		:return: 是否异常
+		"""
+		readbytes = 0
+		self.larc_file.seek(self.array_head)
+		for i in range(self.files_count):
+			file_info = FileInfo()
+			file_info.file_num = int.from_bytes(self.larc_file.read(4), byteorder="little")
+			file_info.file_head = int.from_bytes(self.larc_file.read(4), byteorder="little")
+			file_info.file_long = int.from_bytes(self.larc_file.read(4), byteorder="little")
+			j:int = 0
+			while char := self.larc_file.read(1) != b"\0":
+				file_info.file_name += char
+				j += 1
+				if j > 255:
+					print("文件名过长")
+					return True
+			readbytes += (4 + 4 + 4 + j + 1)
+			if readbytes > self.array_long:
+				print("文件列表数组长度错误")
+				return True
+			self.files_array.append(file_info)
+		if readbytes != self.array_long:
+			print("文件列表数组长度错误")
+			return True
+		return False
+		
+	def close_file(self) -> bool:
+		"""
+		关闭文件
+		:return: 是否异常
+		"""
+		boolean:bool = False
+		try:
+			self.larc_file.close()
+		except:
+			print("关闭文件失败")
+			boolean = True
+		try:
+			del self.larc_file
+			del self.file_path
+			del self.file_version
+			del self.array_head
+			del self.array_long
+			del self.files_count
+			del self.files_long
+			del self.files_array
+		except:
+			print("删除文件对象失败")
+			boolean = True
+		return boolean
