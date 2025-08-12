@@ -1,0 +1,1079 @@
+ackground: #282828;
+    color: #e6e6e6;
+  }
+
+  li {
+    border-bottom: 1px dashed #2f2f2f;
+  }
+
+  /* Additional overrides as needed */
+}
+<!DOCTYPE html>
+<!-- saved from url=(0032)https://vim.rtorr.com/lang/zh_cn -->
+<html lang="zh"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Vim Cheat Sheet</title>
+  <link rel="shortcut icon" href="https://vim.rtorr.com/images/icons/icon-48x48.png">
+  <link rel="manifest" href="https://vim.rtorr.com/manifest.webmanifest">
+  <meta name="theme-color" content="#FA4949">
+  <meta http-equiv="cache-control" content="max-age=600">
+  <meta name="description" content="Explore vim.rtorr.com for an extensive Vim cheat sheet, offering clear, concise commands and shortcuts for Vim users. Whether you&#39;re a beginner or an experienced developer, find tips and tricks to enhance your coding efficiency in Vim.">
+  <link rel="apple-touch-icon" sizes="48x48" href="https://vim.rtorr.com/images/icons/icon-48x48.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="https://vim.rtorr.com/images/icons/icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="96x96" href="https://vim.rtorr.com/images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="https://vim.rtorr.com/images/icons/icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="https://vim.rtorr.com/images/icons/icon-192x192.png">
+  <link rel="apple-touch-icon" sizes="256x256" href="https://vim.rtorr.com/images/icons/icon-256x256.png">
+  <link rel="apple-touch-icon" sizes="384x384" href="https://vim.rtorr.com/images/icons/icon-384x384.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="https://vim.rtorr.com/images/icons/icon-512x512.png">
+  <link rel="stylesheet" href="./Vim Cheat Sheet_files/style.css">
+</head>
+
+<body>
+  <div class="sponsor">
+    <div class="container">
+      <span>
+        <a target="_blank" href="https://www.warp.dev/">
+          <div class="sponsor-logo-container">
+            <span>Sponsor</span>
+            <img class="sponsor-logo" src="./Vim Cheat Sheet_files/warp-logo.svg" alt="Warp logo">
+          </div>
+          <div class="sponsor-tagline"><span>A new terminal focused on developer productivity</span></div>
+      </a></span><a target="_blank" href="https://www.warp.dev/">
+      </a>
+    </div>
+  </div>
+  <div class="container">
+    <div class="grid-block">
+      <div class="grid-1">
+        <h1>
+          <a class="site-title" href="https://vim.rtorr.com/">
+            Vim Cheat Sheet
+          </a>
+        </h1>
+      </div>
+    </div>
+    <div class="container">
+      <main><div class="container">
+  <div class="commands-container">
+    <div class="grid-block">
+      <div class="grid-lg-1-3">
+        <h2>全局</h2>
+        <ul>
+          <li>
+            <kbd>:h[elp] 关键字</kbd> - 打开关键字帮助
+          </li>
+          <li>
+            <kbd>:sav[eas] 文件名</kbd> - 另存为
+          </li>
+          <li>
+            <kbd>:clo[se]</kbd> - 关闭当前窗口
+          </li>
+          <li>
+            <kbd>:ter[minal]</kbd> - 打开一个shell窗口
+          </li>
+          <li>
+            <kbd>K</kbd> - 打开光标所在单词的man页面
+          </li>
+        </ul>
+        <div class="well">
+          <strong>Tip</strong> 在终端中运行 <kbd>vimtutor</kbd> 以学习最基础的 Vim 命令。
+        </div>
+        <h2>移动光标</h2>
+        <ul>
+          <li>
+            <kbd>h</kbd> - 左移光标
+          </li>
+          <li>
+            <kbd>j</kbd> - 下移光标
+          </li>
+          <li>
+            <kbd>k</kbd> - 上移光标
+          </li>
+          <li>
+            <kbd>l</kbd> - 右移光标
+          </li>
+          <li>
+            <kbd>gj</kbd> - 下移光标(折行文本)
+          </li>
+          <li>
+            <kbd>gk</kbd> - 上移光标(折行文本)
+          </li>
+          <li>
+            <kbd>H</kbd> - 移动到当前页面顶部
+          </li>
+          <li>
+            <kbd>M</kbd> - 移动到当前页面中间
+          </li>
+          <li>
+            <kbd>L</kbd> - 移动到当前页面底部
+          </li>
+          <li>
+            <kbd>w</kbd> - 移动到下个单词开头
+          </li>
+          <li>
+            <kbd>W</kbd> - 移动到下个单词开头(单词含标点)
+          </li>
+          <li>
+            <kbd>e</kbd> - 移动到下个单词结尾
+          </li>
+          <li>
+            <kbd>E</kbd> - 移动到下个单词结尾(单词含标点)
+          </li>
+          <li>
+            <kbd>b</kbd> - 移动到上个单词开头
+          </li>
+          <li>
+            <kbd>B</kbd> - 移动到上个单词开头(单词含标点)
+          </li>
+          <li>
+            <kbd>ge</kbd> - 移动到上个单词结尾
+          </li>
+          <li>
+            <kbd>gE</kbd> - 移动到上个单词结尾(单词含标点)
+          </li>
+          <li>
+            <kbd>%</kbd> - 跳转到配对的符号(默认支持的配对符号组: '()', '{}', '[]' - 在vim中使用 <code>:h matchpairs</code> 获得更多信息)
+          </li>
+          <li>
+            <kbd>0</kbd> - 移动到行首
+          </li>
+          <li>
+            <kbd>^</kbd> - 移动到行首的非空白符
+          </li>
+          <li>
+            <kbd>$</kbd> - 移动到行尾
+          </li>
+          <li>
+            <kbd>g_</kbd> - 移动到行内最后一个非空白符
+          </li>
+          <li>
+            <kbd>gg</kbd> - 移动到文件第一行
+          </li>
+          <li>
+            <kbd>G</kbd> - 移动到文件最后一行
+          </li>
+          <li>
+            <kbd>5gg</kbd> or <kbd>5G</kbd> - 移动到第五行
+          </li>
+          <li>
+            <kbd>gd</kbd> - 跳转到局部定义
+          </li>
+          <li>
+            <kbd>gD</kbd> - 跳转到全局定义
+          </li>
+          <li>
+            <kbd>fx</kbd> - 移动到字符 x 下次出现的位置
+          </li>
+          <li>
+            <kbd>tx</kbd> - 移动到字符 x 下次出现的位置的前一个字符
+          </li>
+          <li>
+            <kbd>Fx</kbd> - 移动到字符 x 上次出现的位置
+          </li>
+          <li>
+            <kbd>Tx</kbd> - 移动到字符 x 上次出现的位置的后一个字符
+          </li>
+          <li>
+            <kbd>;</kbd> - 重复之前的f、t、F、T操作
+          </li>
+          <li>
+            <kbd>,</kbd> - 反向重复之前的f、t、F、T操作
+          </li>
+          <li>
+            <kbd>}</kbd> - 移动到下一个段落 (当编辑代码时则为函数／代码块)
+          </li>
+          <li>
+            <kbd>{</kbd> - 移动到上一个段落 (当编辑代码时则为函数／代码块)
+          </li>
+          <li>
+            <kbd>zz</kbd> - 移动屏幕使光标居中
+          </li>
+          <li>
+            <kbd>zt</kbd> - 移动屏幕使光标位于屏幕顶部
+          </li>
+          <li>
+            <kbd>zb</kbd> - 移动屏幕使光标位于屏幕底部
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>e</kbd> - 向下移动屏幕一行(保持光标不动)
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>y</kbd> - 向上移动屏幕一行(保持光标不动)
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>b</kbd> - 向上滚动一屏
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>f</kbd> - 向下滚动一屏
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>d</kbd> - 向下滚动半屏
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>u</kbd> - 向上滚动半屏
+          </li>
+        </ul>
+        <div class="well">
+          <strong>Tip</strong>
+          命令前追加数字表示命令的重复次数, 比如 <kbd>4j</kbd> 表示向下移动四行
+        </div>
+        <h2>插入模式 - 插入/追加文本</h2>
+        <ul>
+          <li>
+            <kbd>i</kbd> - 从光标前开始插入字符
+          </li>
+          <li>
+            <kbd>I</kbd> - 从行首开始插入字符
+          </li>
+          <li>
+            <kbd>a</kbd> - 从光标后开始插入字符
+          </li>
+          <li>
+            <kbd>A</kbd> - 从行尾开始插入字符
+          </li>
+          <li>
+            <kbd>o</kbd> - 在当前行之下另起一行, 开始插入字符
+          </li>
+          <li>
+            <kbd>O</kbd> - 在当前行之上另起一行, 开始插入字符
+          </li>
+          <li>
+            <kbd>ea</kbd> - 从当前单词末尾开始插入
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>h</kbd> - 在插入模式下，删除光标前的字符
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>w</kbd> - 在插入模式下，删除光标前的单词
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>j</kbd> - 在插入模式下，另起一行
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>t</kbd> - 在插入模式下，向右缩进，宽度由 shiftwidth 控制
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>d</kbd> - 在插入模式下，向左缩进，宽度由 shiftwidth 控制
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>n</kbd> - 在插入模式下，在光标之前插入自动补全的下一个匹配项
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>p</kbd> - 在插入模式下，在光标之前插入自动补全的上一个匹配项
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>rx</kbd> - 插入寄存器 x 的内容
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>ox</kbd> - 暂时进入正常模式以发出一个正常模式命令 x。
+          </li>
+          <li>
+            <kbd>Esc</kbd> or <kbd>Ctrl</kbd> + <kbd>c</kbd> - 退出插入模式
+          </li>
+        </ul>
+      </div>
+      <div class="grid-lg-1-3">
+        <h2>编辑文本</h2>
+        <ul>
+          <li>
+            <kbd>r</kbd> - 替换当前字符
+          </li>
+          <li>
+            <kbd>R</kbd> - 在 <kbd>ESC</kbd> 按下之前，替换多个字符
+          </li>
+          <li>
+            <kbd>J</kbd> - 将下一行合并到当前行, 并在两部分文本之间插入一个空格
+          </li>
+          <li>
+            <kbd>gJ</kbd> - 将下一行合并到当前行, 两部分文本之间不含空格
+          </li>
+          <li>
+            <kbd>gwip</kbd> - 重新调整段落
+          </li>
+          <li>
+            <kbd>g~</kbd> - 大小写转换操作修饰符
+          </li>
+          <li>
+            <kbd>gu</kbd> - 小写操作修饰符
+          </li>
+          <li>
+            <kbd>gU</kbd> - 大写操作修饰符
+          </li>
+          <li>
+            <kbd>cc</kbd> - 将光标所在的行删除, 然后进入插入模式
+          </li>
+          <li>
+            <kbd>c$</kbd> or <kbd>C</kbd> - 将光标处到行尾删除, 然后进入插入模式
+          </li>
+          <li>
+            <kbd>ciw</kbd> - 将光标所在的单词删除, 然后进入插入模式
+          </li>
+          <li>
+            <kbd>cw</kbd> or <kbd>ce</kbd> - 从光标位置开始, 修改单词
+          </li>
+          <li>
+            <kbd>s</kbd> - 删除当前字符, 然后进入插入模式
+          </li>
+          <li>
+            <kbd>S</kbd> - 清空当前行, 然后进入插入模式 (同<kbd>cc</kbd>)
+          </li>
+          <li>
+            <kbd>xp</kbd> - 当前字符后移
+          </li>
+          <li>
+            <kbd>u</kbd> - 撤销
+          </li>
+          <li>
+            <kbd>U</kbd> - 撤销上一次的改动行的操作
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>r</kbd> - 重做（取消撤销）
+          </li>
+          <li>
+            <kbd>.</kbd> - 再次执行上个命令
+          </li>
+        </ul>
+        <h2>选择文本（可视化模式）</h2>
+        <ul>
+          <li>
+            <kbd>v</kbd> - 进入可视化模式, 移动光标高亮选择, 然后可以对选择的文本执行命令(比 y - 复制)
+          </li>
+          <li>
+            <kbd>V</kbd> - 进入可视化模式(行粒度选择)
+          </li>
+          <li>
+            <kbd>o</kbd> - 切换光标到选择区开头/结尾
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>v</kbd> - 进入可视化模式(矩阵选择)
+          </li>
+          <li>
+            <kbd>O</kbd> - 切换光标到选择区的角
+          </li>
+          <li>
+            <kbd>aw</kbd> - 选择当前单词
+          </li>
+          <li>
+            <kbd>ab</kbd> - 选择被 () 包裹的区域(含括号)
+          </li>
+          <li>
+            <kbd>aB</kbd> - 选择被 {} 包裹的区域(含花括号)
+          </li>
+          <li>
+            <kbd>at</kbd> - 选择被 &lt;&gt; 标签包裹的区域(含&lt;&gt;标签)
+          </li>
+          <li>
+            <kbd>ib</kbd> - 选择被 () 包裹的区域(不含括号)
+          </li>
+          <li>
+            <kbd>iB</kbd> - 选择被 {} 包裹的区域(不含花括号)
+          </li>
+          <li>
+            <kbd>it</kbd> - 选择被 &lt;&gt; 标签包裹的区域(不含&lt;&gt;标签)
+          </li>
+          <li>
+            <kbd>Esc</kbd> or <kbd>Ctrl</kbd> + <kbd>c</kbd> - 退出可视化模式
+          </li>
+        </ul>
+        <div class="well">
+          <strong>Tip</strong> 也可以使用 <kbd>(</kbd> 和 <kbd>{</kbd> 分别代替 <kbd>b</kbd> 和 <kbd>B</kbd> 
+        </div>
+        <h2>可视化模式命令</h2>
+        <ul>
+          <li>
+            <kbd>&gt;</kbd> - 向右缩进
+          </li>
+          <li>
+            <kbd>&lt;</kbd> - 向左缩进
+          </li>
+          <li>
+            <kbd>y</kbd> - 复制
+          </li>
+          <li>
+            <kbd>d</kbd> - 剪切
+          </li>
+          <li>
+            <kbd>~</kbd> - 大小写切换
+          </li>
+          <li>
+            <kbd>u</kbd> - 将选中文本转换为小写
+          </li>
+          <li>
+            <kbd>U</kbd> - 将选中文本转换为大写
+          </li>
+        </ul>
+        <h2>寄存器</h2>
+        <ul>
+          <li>
+            <kbd>:reg[isters]</kbd> - 显示寄存器内容
+          </li>
+          <li>
+            <kbd>"xy</kbd> - 复制内容到寄存器 x
+          </li>
+          <li>
+            <kbd>"xp</kbd> - 粘贴寄存器 x 中的内容
+          </li>
+          <li>
+            <kbd>"+y</kbd> - 复制内容到系统剪贴板寄存器
+          </li>
+          <li>
+            <kbd>"+p</kbd> - 粘贴系统剪贴板寄存器的内容
+          </li>
+        </ul>
+        <div class="well">
+          <strong>Tip</strong> 寄存器被存储在 ~/.viminfo 中, 在下次重启vim时仍会加载
+        </div>
+        <div class="well">
+          <strong>Tip</strong> 特殊寄存器：
+          <p>
+             <kbd>0</kbd> - 上次复制<br>
+             <kbd>"</kbd> - 未命名寄存器，上次复制或删除<br>
+             <kbd>%</kbd> - 当前文件名<br>
+             <kbd>#</kbd> - 轮换文件名<br>
+             <kbd>*</kbd> - 剪贴板内容 (X11 primary)<br>
+             <kbd>+</kbd> - 剪贴板内容 (X11 clipboard)<br>
+             <kbd>/</kbd> - 上次搜索的pattern<br>
+             <kbd>:</kbd> - 上次执行的命令<br>
+             <kbd>.</kbd> - 上次插入的文本<br>
+             <kbd>-</kbd> - 上次剪切的短于一行的文本<br>
+             <kbd>=</kbd> - 表达式寄存器<br>
+             <kbd>_</kbd> - 黑洞寄存器<br>
+          </p>
+        </div>
+        <h2>标记</h2>
+        <ul>
+          <li>
+            <kbd>:marks</kbd> - 标记列表
+          </li>
+          <li>
+            <kbd>ma</kbd> - 设置当前位置为标记 a
+          </li>
+          <li>
+            <kbd>`a</kbd> - 跳转到标记 a 的位置
+          </li>
+          <li>
+            <kbd>y`a</kbd> - 复制当前位置到标记 a 的内容
+          </li>
+          <li>
+            <kbd>`0</kbd> - 跳转到上次 Vim 退出时的位置
+          </li>
+          <li>
+            <kbd>`"</kbd> - 跳转到上次编辑该文件时的位置
+          </li>
+          <li>
+            <kbd>`.</kbd> - 跳转到上次修改的位置
+          </li>
+          <li>
+            <kbd>``</kbd> - 跳转回上次跳转前的位置
+          </li>
+          <li>
+            <kbd>:ju[mps]</kbd> - 列出跳转历史记录
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>i</kbd> - 跳转至跳转历史中较晚的位置
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>o</kbd> - 跳转回跳转历史中较早的位置
+          </li>
+          <li>
+            <kbd>:changes</kbd> - 列出修改历史记录
+          </li>
+          <li>
+            <kbd>g,</kbd> - 跳转至修改历史中较晚修改的位置
+          </li>
+          <li>
+            <kbd>g;</kbd> - 跳转至修改历史中较早修改的位置
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>]</kbd> - 跳转到当前光标位置对应的 tag
+          </li>
+        </ul>
+        <div class="well">
+          <strong>Tip</strong> 可以使用反引号(<kbd>`</kbd>)或单引号(<kbd>'</kbd>)跳转至标记位置。使用单引号会跳转至该标记所在行行首(首个非空白字符)。
+        </div>
+      </div>
+      <div class="grid-lg-1-3">
+        <h2>宏</h2>
+        <ul>
+          <li>
+            <kbd>qa</kbd> - 录制宏 a
+          </li>
+          <li>
+            <kbd>q</kbd> - 停止录制宏
+          </li>
+          <li>
+            <kbd>@a</kbd> - 执行宏 a
+          </li>
+          <li>
+            <kbd>@@</kbd> - 重新执行上次执行的宏
+          </li>
+        </ul>
+        <h2>剪切, 复制, 粘贴</h2>
+        <ul>
+          <li>
+            <kbd>yy</kbd> - 复制当前行
+          </li>
+          <li>
+            <kbd>2yy</kbd> - 复制 2 行
+          </li>
+          <li>
+            <kbd>yw</kbd> - 复制当前单词
+          </li>
+          <li>
+            <kbd>yiw</kbd> - 复制光标处的单词
+          </li>
+          <li>
+            <kbd>yaw</kbd> - 复制光标处的单词及其前后的空格
+          </li>
+          <li>
+            <kbd>y$</kbd> or <kbd>Y</kbd> - 复制, 从光标位置到行末
+          </li>
+          <li>
+            <kbd>p</kbd> - 在光标后粘贴
+          </li>
+          <li>
+            <kbd>P</kbd> - 在光标前粘贴
+          </li>
+          <li>
+            <kbd>gp</kbd> - 在光标后粘贴并把光标定位于粘贴的文本之后
+          </li>
+          <li>
+            <kbd>gP</kbd> - 在光标前粘贴并把光标定位于粘贴的文本之后
+          </li>
+          <li>
+            <kbd>dd</kbd> - 剪切当前行
+          </li>
+          <li>
+            <kbd>2dd</kbd> - 剪切 2 行
+          </li>
+          <li>
+            <kbd>dw</kbd> - 剪切当前单词
+          </li>
+          <li>
+            <kbd>diw</kbd> - 删除光标处的单词
+          </li>
+          <li>
+            <kbd>daw</kbd> - 删除光标处的单词及其前后的空格
+          </li>
+          <li>
+            <kbd>:3,5d</kbd> - 删除 3 至 5 行
+          </li>
+        </ul>
+        <div class="well">
+          <strong>Tip</strong> 你也可以使用以下字符来指定范围： <br>
+          e.g. <br>
+          <p>
+            <kbd>:.,$d</kbd> - 从当前行到文件末尾 <br>
+            <kbd>:.,1d</kbd> - 从当前行到文件开头 <br>
+            <kbd>:10,1d</kbd> - 第 10 行到文件末尾 <br>
+          </p>
+        </div>
+        <ul>
+          <li>
+            <kbd>:g/{pattern}/d</kbd> - 删除所有包含 pattern 的行
+          </li>
+          <li>
+            <kbd>:g!/{pattern}/d</kbd> - 删除所有不包含 pattern 的行
+          </li>
+          <li>
+            <kbd>d$</kbd> or <kbd>D</kbd> - 剪切, 从光标位置到行末 (同 D )
+          </li>
+          <li>
+            <kbd>x</kbd> - 剪切当前字符
+          </li>
+        </ul>
+        <h2>文字缩进</h2>
+        <ul>
+          <li>
+            <kbd>&gt;&gt;</kbd> - 将当前行向右缩进，宽度由 shiftwidth 控制
+          </li>
+          <li>
+            <kbd>&lt;&lt;</kbd> - 将当前行向左缩进，宽度由 shiftwidth 控制
+          </li>
+          <li>
+            <kbd>&gt;%</kbd> - 向右缩进 () 或 {} 内的区域 (光标需置于括号上)
+          </li>
+          <li>
+            <kbd>&lt;%</kbd> - 向左缩进 () 或 {} 内的区域 (光标需置于括号上)
+          </li>
+          <li>
+            <kbd>&gt;ib</kbd> - 向右缩进 () 内的区域
+          </li>
+          <li>
+            <kbd>&gt;at</kbd> - 向右缩进 &lt;&gt; 标签内的区域
+          </li>
+          <li>
+            <kbd>3==</kbd> - 自动缩进 3 行
+          </li>
+          <li>
+            <kbd>=%</kbd> - 自动缩进 () 或 {} 内的区域 (光标需置于括号上)
+          </li>
+          <li>
+            <kbd>=iB</kbd> - 自动缩进 {} 内的区域 (光标需置于括号上)
+          </li>
+          <li>
+            <kbd>gg=G</kbd> - 自动缩进整个缓冲区
+          </li>
+          <li>
+            <kbd>]p</kbd> - 粘贴并调整缩进至当前行
+          </li>
+        </ul>
+        <h2>退出</h2>
+        <ul>
+          <li>
+            <kbd>:w</kbd> - 保存
+          </li>
+          <li>
+            <kbd>:w !sudo tee %</kbd> - 使用 sudo 保存当前文件
+          </li>
+          <li>
+            <kbd>:wq</kbd> or <kbd>:x</kbd> or <kbd>ZZ</kbd> - 保存并退出
+          </li>
+          <li>
+            <kbd>:q</kbd> - 退出(修改未保存时警告)
+          </li>
+          <li>
+            <kbd>:q!</kbd> or <kbd>ZQ</kbd> - 不保存强制退出
+          </li>
+          <li>
+            <kbd>:wqa</kbd> - 保存所有标签页并全部退出
+          </li>
+        </ul>
+        <h2>查找/替换</h2>
+        <ul>
+          <li>
+            <kbd>/pattern</kbd> - 查找 pattern
+          </li>
+          <li>
+            <kbd>?pattern</kbd> - 向上查找 pattern
+          </li>
+          <li>
+            <kbd>\vpattern</kbd> -  pattern 中的非字母数字字符被视为正则表达式特殊字符 (不需转义字符)
+          </li>
+          <li>
+            <kbd>n</kbd> - 查找下一个
+          </li>
+          <li>
+            <kbd>N</kbd> - 查找上一个
+          </li>
+          <li>
+            <kbd>:%s/old/new/g</kbd> -
+            替换全部
+          </li>
+          <li>
+            <kbd>:%s/old/new/gc</kbd> -
+            (逐个)替换
+          </li>
+          <li>
+            <kbd>:noh[lsearch]</kbd> - 移除搜索结果的高亮显示
+          </li>
+        </ul>
+        <h2>多文件搜索</h2>
+        <ul>
+          <li>
+            <kbd>:vim[grep] /pattern/ {`{file}`}</kbd> -
+            在多个文件中搜索 pattern
+          </li>
+        </ul>
+        <div class="well">
+          e.g.
+          <kbd>:vim[grep] /foo/ **/*</kbd>
+        </div>
+        <ul>
+          <li>
+            <kbd>:cn[ext]</kbd> - 移动至下一个
+          </li>
+          <li>
+            <kbd>:cp[revious]</kbd> - 移动至上一个
+          </li>
+          <li>
+            <kbd>:cope[n]</kbd> - 打开搜索结果列表
+          </li>
+          <li>
+            <kbd>:ccl[ose]</kbd> - 关闭 quickfix 窗口
+          </li>
+        </ul>
+        <h2>标签</h2>
+        <ul>
+          <li>
+            <kbd>:tabnew</kbd> or <kbd>:tabnew {page.words.file}</kbd> -
+            在新标签中打开文件
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wT</kbd> - 将窗口变成标签
+          </li>
+          <li>
+            <kbd>gt</kbd> or <kbd>:tabn[ext]</kbd> - 切换到下一个标签
+          </li>
+          <li>
+            <kbd>gT</kbd> or <kbd>:tabp[revious]</kbd> - 切换到上一个标签
+          </li>
+          <li>
+            <kbd>#gt</kbd> - 切换到第 # 个标签
+          </li>
+          <li>
+            <kbd>:tabm[ove] #</kbd> - 移动标签到第 # 位(下标从 0 开始)
+          </li>
+          <li>
+            <kbd>:tabc[lose]</kbd> - 关闭当前标签
+          </li>
+          <li>
+            <kbd>:tabo[nly]</kbd> - 关闭其他标签
+          </li>
+          <li>
+            <kbd>:tabdo</kbd> command - 在所有标签中执行命令 (例如 <kbd>:tabdo q</kbd> 关闭所有标签)
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid-block">
+      <div class="grid-lg-1-2">
+        <h2>多文件编辑</h2>
+        <ul>
+          <li>
+            <kbd>:e[dit] 文件名</kbd> - 新建缓冲区打开 filename
+          </li>
+          <li>
+            <kbd>:bn[ext]</kbd> -
+            切换到下个缓冲区
+          </li>
+          <li>
+            <kbd>:bp[revious]</kbd> -
+            切换到上个缓冲区
+          </li>
+          <li>
+            <kbd>:bd[elete]</kbd> - 关闭缓冲区
+          </li>
+          <li>
+            <kbd>:b[uffer]#</kbd> - 切换到第 # 个缓冲区
+          </li>
+          <li>
+            <kbd>:b[uffer] file</kbd> - 用文件名切换缓冲区
+          </li>
+          <li>
+            <kbd>:ls</kbd> or <kbd>:buffers</kbd> - 列出所有打开的缓冲区
+          </li>
+          <li>
+            <kbd>:sp[lit] 文件名</kbd> - 新建缓冲区打开 filename 并水平分割窗口
+          </li>
+          <li>
+            <kbd>:vs[plit] 文件名</kbd> - 新缓冲区打开 filename 并垂直分割窗口
+          </li>
+          <li>
+            <kbd>:vert[ical] ba[ll]</kbd> - 垂直分割窗口编辑所有缓冲区
+          </li>
+          <li>
+            <kbd>:tab ba[ll]</kbd> - 标签页编辑所有缓冲区
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>ws</kbd> - 水平分割窗口
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wv</kbd> - 垂直分割窗口
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>ww</kbd> - 在窗口间切换
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wq</kbd> - 关闭窗口
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wx</kbd> - 当前窗口与下一个窗口交换位置
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>w=</kbd> - 令所有窗口高 &amp; 宽一致
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wh</kbd> - 切换到左侧窗口
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wl</kbd> - 切换到右侧窗口
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wj</kbd> - 切换到下侧窗口
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wk</kbd> - 切换到上侧窗口
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wH</kbd> - 使游标所在视窗全高并移至最左 (最左垂直视窗)
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wL</kbd> - 使游标所在视窗全高并移至最右 (最右垂直视窗)
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wJ</kbd> - 使游标所在视窗全宽并移至最下 (最下水平视窗)
+          </li>
+          <li>
+            <kbd>Ctrl</kbd> + <kbd>wK</kbd> - 使游标所在视窗全宽并移至最上 (最上水平视窗)
+          </li>
+        </ul>
+        
+        
+        
+      </div>
+      <div class="grid-lg-1-2">
+        <h2>Diff</h2>
+        <ul>
+          <li>
+            <kbd>zf</kbd> - 定义折叠修饰符
+          </li>
+          <li>
+            <kbd>zd</kbd> - 删除光标位置的折叠
+          </li>
+          <li>
+            <kbd>za</kbd> - 展开 &amp; 关闭光标位置的折叠
+          </li>
+          <li>
+            <kbd>zo</kbd> - 展开光标位置的折叠
+          </li>
+          <li>
+            <kbd>zc</kbd> - 关闭光标位置的折叠
+          </li>
+          <li>
+            <kbd>zr</kbd> - 展开同级的所有折叠
+          </li>
+          <li>
+            <kbd>zm</kbd> - 关闭同级的所有折叠
+          </li>
+          <li>
+            <kbd>zi</kbd> - 开启 &amp; 关闭折叠功能
+          </li>
+          <li>
+            <kbd>]c</kbd> - 光标移至下一处差异
+          </li>
+          <li>
+            <kbd>[c</kbd> - 光标移至上一处差异
+          </li>
+          <li>
+            <kbd>do</kbd> or <kbd>:diffg[et]</kbd> - 将另一缓冲区中的差异合并至当前缓冲区
+          </li>
+          <li>
+            <kbd>dp</kbd> or <kbd>:diffpu[t]</kbd> - 将当前缓冲区中的差异推送至另一缓冲区
+          </li>
+          <li>
+            <kbd>:diffthis</kbd> - 令当前窗口成为 diff 模式的窗口之一
+          </li>
+          <li>
+            <kbd>:dif[fupdate]</kbd> - 强制刷新 diff 的高亮与折叠
+          </li>
+          <li>
+            <kbd>:diffo[ff]</kbd> - 令当前窗口退出 diff 模式
+          </li>
+        </ul>
+        <div class="well">
+          <strong>Tip</strong> 折叠命令(e.g. <kbd>za</kbd>)只作用于当前级别。使用大写字母(e.g. <kbd>zA</kbd>)令命令作用于全部级别。
+        </div>
+        <div class="well">
+          <strong>Tip</strong> 可以直接在终端运行 <kbd>vimdiff</kbd> 查看文件间的不同。也可以将该程序设为 <kbd>git difftool</kbd> 的选项之一。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+      <div>
+        <div id="footer" class="grid-block">
+          <div class="box">
+            <div class="box-header">
+              <h2>Additional Resources</h2>
+            </div>
+            <div class="box-body">
+              <div class="grid-block">
+                <div class="grid-lg-1-2">
+                  <h3 id="languages">Languages</h3>
+                  <ul>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/ar" lang="ar">العربية</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/bn" lang="bn">বাংলা</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/ca" lang="ca">Català</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/cs" lang="cs">Čeština</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/da_DK" lang="da">Dansk</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/de_de" lang="de">Deutsch</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/el_gr" lang="el">Ελληνικά</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/en_us" lang="en">English</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/eo" lang="eo">Esperanto</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/es_es" lang="es">Español</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/fa_ir" lang="fa">Persian</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/fi" lang="fi">Suomi</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/fr_fr" lang="fr">Français</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/he" lang="he">עברית</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/hr" lang="hr">Hrvatski</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/hu_hu" lang="hu">Magyar</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/id" lang="id">Bahasa Indonesia</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/it" lang="it">Italiano</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/ja" lang="ja">日本語</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/ko" lang="ko">한국어</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/my" lang="my">မြန်မာ</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/nl_nl" lang="nl">Nederlands</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/no_nb" lang="no">Norsk</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/pl_pl" lang="pl">Polski</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/pt_br" lang="pt">Português - Brasil</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/pt_pt" lang="pt">Português - Portugal</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/ro" lang="ro">Romana</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/ru" lang="ru">Русский</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/si_lk" lang="si">සිංහල</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/sk" lang="sk">Slovenčina</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/sv" lang="sv">Svenska</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/th" lang="th">ภาษาไทย</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/tr" lang="tr">Türkçe</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/uk" lang="uk">Українська</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/vi_vn" lang="vi">Tiếng Việt</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/zh_cn" lang="zh">简体中文</a>
+                    </li>
+                    <li>
+                      <a href="https://vim.rtorr.com/lang/zh_tw" lang="zh">中文 (台灣)</a>
+                    </li>
+                  </ul>                </div>
+                <div class="grid-lg-1-2">
+                  <h3>About the vim cheat sheet</h3>
+                  <p>
+                    This project aims to be one of the most accessible vim guides available. We
+                    made sure to support mobile, desktop, and other
+                    <a href="https://vim.rtorr.com/lang/zh_cn#languages" aria-label="Jump to languages section">languages</a>.
+                  </p>
+                  <p>
+                    <a target="_blank" href="https://github.com/sponsors/rtorr" aria-label="Sponsor this project on GitHub">❤️ Please consider sponsoring this
+                      project ❤️</a>!
+                  </p>
+                  <p>
+                    You can read about how to contribute (and help improve) by viewing our
+                    <a href="https://github.com/rtorr/vim-cheat-sheet/blob/master/README.md" target="_blank" rel="noopener noreferrer" aria-label="Read the README on GitHub">
+                      README
+                    </a>
+                    . There you can see how to set up this project, or how to contribute a new
+                    language. Here is a big thank you to our
+                    <a href="https://github.com/rtorr/vim-cheat-sheet/graphs/contributors" target="_blank" rel="noopener noreferrer" aria-label="View project contributors on GitHub">
+                      contributors!
+                    </a>
+                  </p>
+                  <p>
+                    This project is licensed under
+                    <a href="https://github.com/rtorr/vim-cheat-sheet/blob/master/License.txt" target="_blank" rel="noopener noreferrer" aria-label="View the MIT License for this project">
+                      The MIT License (MIT)
+                    </a>
+                    .
+                  </p>
+                  <h3>Other places to find this document</h3>
+                  <p>
+                    This document was embedded in
+                    <a href="https://duckduckgo.com/?q=vim+cheat+sheet" target="_blank" rel="noopener noreferrer" aria-label="Search for this document on DuckDuckGo">
+                      DuckDuckGo
+                    </a>
+                    .
+                  </p>
+                  <h3>More resources</h3>
+                  <p>
+                    Interactive Vim tutorial:
+                    <a href="https://openvim.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit Open Vim for an interactive Vim tutorial">
+                      Open Vim
+                    </a>
+                  </p>
+                  <p>
+                    Vim quick reference from Vim help pages:
+                    <a href="https://vimhelp.org/quickref.txt.html" target="_blank" rel="noopener noreferrer" aria-label="Access Vim quick reference"> 
+                      quickref.txt
+                    </a>
+                  </p>
+                  <p>
+                    List of all Vim ex (<kbd>:</kbd>) commands:
+                    <a href="https://vimhelp.org/index.txt.html#ex-cmd-index" target="_blank" rel="noopener noreferrer" aria-label="View list of all Vim ex commands">
+                      ex-cmd-index
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-block link-to-repo">
+          <p>
+            Checkout the source on
+            <a href="https://github.com/rtorr/vim-cheat-sheet" target="_blank" rel="noopener noreferrer">
+              Github
+            </a>
+          </p>
+          <p>version: 3.2.0</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    window.CACHE_NAME = "3.2.0";
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load',
