@@ -1,13 +1,3 @@
-ackground: #282828;
-    color: #e6e6e6;
-  }
-
-  li {
-    border-bottom: 1px dashed #2f2f2f;
-  }
-
-  /* Additional overrides as needed */
-}
 <!DOCTYPE html>
 <!-- saved from url=(0032)https://vim.rtorr.com/lang/zh_cn -->
 <html lang="zh"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -28,7 +18,7 @@ ackground: #282828;
   <link rel="apple-touch-icon" sizes="256x256" href="https://vim.rtorr.com/images/icons/icon-256x256.png">
   <link rel="apple-touch-icon" sizes="384x384" href="https://vim.rtorr.com/images/icons/icon-384x384.png">
   <link rel="apple-touch-icon" sizes="512x512" href="https://vim.rtorr.com/images/icons/icon-512x512.png">
-  <link rel="stylesheet" href="./Vim Cheat Sheet_files/style.css">
+  <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
@@ -38,7 +28,7 @@ ackground: #282828;
         <a target="_blank" href="https://www.warp.dev/">
           <div class="sponsor-logo-container">
             <span>Sponsor</span>
-            <img class="sponsor-logo" src="./Vim Cheat Sheet_files/warp-logo.svg" alt="Warp logo">
+            <img class="sponsor-logo" src=".warp-logo.svg" alt="Warp logo">
           </div>
           <div class="sponsor-tagline"><span>A new terminal focused on developer productivity</span></div>
       </a></span><a target="_blank" href="https://www.warp.dev/">
@@ -1076,4 +1066,11 @@ ackground: #282828;
     window.CACHE_NAME = "3.2.0";
 
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load',
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/javascripts/sw.js?version=3.2.0');
+      });
+    }
+  </script>
+
+
+</body></html>
