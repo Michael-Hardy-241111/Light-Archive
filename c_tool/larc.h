@@ -32,6 +32,7 @@
 > Github (https://github.com/Michael-Hardy-241111/Light-Archive)
 */
 
+#pragma once
 #ifndef __LARC_H
 #define __LARC_H
 
