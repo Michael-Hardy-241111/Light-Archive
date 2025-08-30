@@ -1,8 +1,16 @@
-#include <iso646.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+// 跨平台目录创建支持
+#ifdef _WIN32
+    #include <direct.h>
+    #define mkdir(dir, mode) _mkdir(dir)
+#else
+    #include <sys/stat.h>
+    #include <sys/types.h>
+#endif
 
 // 禁用 CRT 安全警告
 #define _CRT_SECURE_NO_WARNINGS
@@ -11,7 +19,8 @@
 #define LARC_FOOTER ((char)0x03)
 #define LARC_DEFAULT_VERSION ((uint8_t[3]){0, 2, 0})
 
-struct FileStruct {
+struct FileStruct
+{
     // 文件索引
     uint32_t index;
     // 文件偏移
@@ -22,221 +31,489 @@ struct FileStruct {
     char* name;
 };
 
-struct LarcFile {
+struct LarcFile
+{
     // LARC 文件指针
-    FILE* larc_file;
+    FILE* larcFile;
     // LARC 文件版本
     uint8_t version[3];
     // 加密标志
-    uint8_t encryption_flag;
+    uint8_t encryptionFlag;
     // 密钥长度
-    uint32_t key_length;
+    uint32_t keyLength;
     // 文件列表头偏移
-    uint32_t list_header_offset;
+    uint32_t listHeaderOffset;
     // 文件列表长度
-    uint32_t list_length;
+    uint32_t listLength;
     // 文件数量
-    uint32_t file_count;
+    uint32_t fileCount;
     // 文件总长度
-    uint64_t file_total_length;
+    uint64_t fileTotalLength;
     // 文件列表，一个数组，每一个元素是 FileStruct 结构体指针
-    struct FileStruct** file_list;
+    struct FileStruct** fileList;
 };
 
 /**
- * @brief 关闭 LARC 文件
- * 
- * @param larc_file LarcFile 结构体指针
- * @return int 0 成功 1 失败
+ * 创建新的LARC文件并初始化文件结构
+ * @param fileName 要创建的LARC文件路径
+ * @return 成功返回LarcFile指针，失败返回NULL
+ * @note 文件头包含4字节标识、3字节版本号(修订.次.主)、1字节加密标志
  */
-int larc_close(struct LarcFile* larc_file) {
-    // 关闭文件
-    fclose(larc_file->larc_file);
-    // 释放文件列表内存
-    for (uint32_t i = 0; i < larc_file->file_count; ++ i) {
-        free(larc_file->file_list[i]);
+struct LarcFile* larcCreate(const char* fileName)
+{
+    FILE* fp = fopen(fileName, "wb+");
+    if (!fp) {
+        perror("无法创建文件");
+        return NULL;
     }
-    free(larc_file->file_list);
-    // 释放 LarcFile 结构体内存
-    free(larc_file);
+
+    // 初始化32字节头信息（含文件结束符）
+    uint8_t header[33] = {
+        'L','A','R','C',  // 文件头 (4B)
+        LARC_DEFAULT_VERSION[0], LARC_DEFAULT_VERSION[1], LARC_DEFAULT_VERSION[2], // 版本号 (修订.次.主)
+        0,                 // 加密标志 (1B)
+        0,0,0,0,          // 密钥长度 (4B)
+        0,0,0,0,          // 列表头偏移 (4B)
+        0,0,0,0,          // 列表长度 (4B)
+        0,0,0,0,          // 文件数量 (4B)
+        0,0,0,0,0,0,0,0,  // 总长度 (8B)
+        (uint8_t)'\x03'    // 文件结束符 (1B)
+    };
+
+    struct LarcFile* larc = malloc(sizeof(struct LarcFile));
+    if (!larc) {
+        perror("内存分配失败");
+        fclose(fp);
+        return NULL;
+    }
+
+    // 一次性写入完整头信息
+    if (fwrite(header, 1, sizeof(header), fp) != sizeof(header)) {
+        perror("文件头写入失败");
+        free(larc);
+        fclose(fp);
+        return NULL;
+    }
+
+    // 初始化结构体
+    larc->larcFile = fp;
+    memcpy(larc->version, LARC_DEFAULT_VERSION, sizeof(LARC_DEFAULT_VERSION));  // 版本号
+    return larc;
+}
+
+/**
+ * 打开现有LARC文件并验证文件结构
+ * @param fileName 要打开的LARC文件路径
+ * @return 成功返回初始化好的LarcFile指针，失败返回NULL
+ * @warning 必须通过larcClose()释放资源
+ */
+struct LarcFile* larcOpen(const char* fileName)
+{
+    FILE* fp = fopen(fileName, "rb+");
+    if (!fp) {
+        perror("文件打开失败");
+        return NULL;
+    }
+
+    // 验证文件头
+    uint8_t header[32];
+    if (fread(header, 1, sizeof(header), fp) != sizeof(header)) {
+        perror("文件头读取失败");
+        fclose(fp);
+        return NULL;
+    }
+
+    // 检查文件标识
+    if (memcmp(header, "LARC", 4) != 0) {
+        fprintf(stderr, "无效的文件格式\n");
+        fclose(fp);
+        return NULL;
+    }
+
+    struct LarcFile* larc = malloc(sizeof(struct LarcFile));
+    if (!larc) {
+        perror("内存分配失败");
+        fclose(fp);
+        return NULL;
+    }
+
+    // 初始化结构体
+    larc->larcFile = fp;
+    memcpy(larc->version, header+4, 3);
+    larc->encryptionFlag = header[7];
+    
+    // 解析其他头字段
+    larc->keyLength = *(uint32_t*)(header+8);
+    larc->listHeaderOffset = *(uint32_t*)(header+12);
+    larc->listLength = *(uint32_t*)(header+16);
+    larc->fileCount = *(uint32_t*)(header+20);
+    larc->fileTotalLength = *(uint64_t*)(header+24);
+
+    return larc;
+}
+
+/**
+ * 关闭LARC文件并释放资源
+ * @param larc 要关闭的LarcFile指针
+ * @note 必须调用此函数释放文件资源
+ */
+void larcClose(struct LarcFile* larc)
+{
+    if (larc) {
+        fclose(larc->larcFile);
+        // 释放文件列表
+        if (larc->fileList) {
+            for (int i = 0; i < larc->fileCount; i++) {
+                free(larc->fileList[i]);
+            }
+            free(larc->fileList);
+        }
+        free(larc);
+    }
+    return;
+}
+
+/**
+ * 打包多个文件到LARC文件
+ * @param larc 目标LarcFile指针
+ * @param fileNames 文件名数组
+ * @param fileCount 文件数量
+ * @return 成功返回0，失败返回-1
+ * @warning 文件名数组必须以NULL结尾
+ */
+
+int packFiles(struct LarcFile* larc, const char** fileNames, int fileCount)
+{
+    if (!larc || !fileNames || fileCount <= 0) {
+        fprintf(stderr, "无效的参数\n");
+        return -1;
+    }
+
+    // 获取当前文件位置（文件内容开始位置）
+    fseek(larc->larcFile, 0, SEEK_END);
+    uint64_t currentOffset = ftell(larc->larcFile);
+
+    // 逐个处理文件
+    for (int i = 0; i < fileCount; i++) {
+        const char* fileName = fileNames[i];
+        FILE* sourceFile = fopen(fileName, "rb");
+        if (!sourceFile) {
+            perror("无法打开源文件");
+            fprintf(stderr, "文件: %s\n", fileName);
+            // 清理已分配的内存
+            for (int j = 0; j < i; j++) {
+                free(larc->fileList[j]->name);
+                free(larc->fileList[j]);
+            }
+            return -1;
+        }
+
+        // 获取文件大小
+        fseek(sourceFile, 0, SEEK_END);
+        uint64_t fileSize = ftell(sourceFile);
+        fseek(sourceFile, 0, SEEK_SET);
+
+        // 创建文件结构
+        struct FileStruct* fileStruct = malloc(sizeof(struct FileStruct));
+        if (!fileStruct) {
+            perror("内存分配失败");
+            fclose(sourceFile);
+            // 清理已分配的内存
+            for (int j = 0; j < i; j++) {
+                free(larc->fileList[j]->name);
+                free(larc->fileList[j]);
+            }
+            return -1;
+        }
+
+        fileStruct->index = i;
+        fileStruct->offset = currentOffset;
+        fileStruct->size = fileSize;
+        fileStruct->name = malloc(strlen(fileName) + 1);
+        if (!fileStruct->name) {
+            perror("内存分配失败");
+            free(fileStruct);
+            fclose(sourceFile);
+            // 清理已分配的内存
+            for (int j = 0; j < i; j++) {
+                free(larc->fileList[j]->name);
+                free(larc->fileList[j]);
+            }
+            return -1;
+        }
+        strcpy(fileStruct->name, fileName);
+
+        larc->fileList[i] = fileStruct;
+
+        // 写入文件内容
+        uint8_t buffer[4096];
+        size_t bytesRead;
+        while ((bytesRead = fread(buffer, 1, sizeof(buffer), sourceFile)) > 0) {
+            if (fwrite(buffer, 1, bytesRead, larc->larcFile) != bytesRead) {
+                perror("文件写入失败");
+                fclose(sourceFile);
+                // 清理已分配的内存
+                for (int j = 0; j <= i; j++) {
+                    free(larc->fileList[j]->name);
+                    free(larc->fileList[j]);
+                }
+                return -1;
+            }
+        }
+
+        fclose(sourceFile);
+        currentOffset += fileSize;
+        larc->fileTotalLength += fileSize;
+    }
+
+    // 更新文件数量
+    larc->fileCount = fileCount;
+
+    // 记录文件列表头位置
+    larc->listHeaderOffset = currentOffset;
+
+    // 写入文件列表
+    for (int i = 0; i < fileCount; i++) {
+        struct FileStruct* file = larc->fileList[i];
+        
+        // 写入文件索引 (4B)
+        if (fwrite(&file->index, sizeof(uint32_t), 1, larc->larcFile) != 1) {
+            perror("文件索引写入失败");
+            return -1;
+        }
+        
+        // 写入文件偏移 (8B)
+        if (fwrite(&file->offset, sizeof(uint64_t), 1, larc->larcFile) != 1) {
+            perror("文件偏移写入失败");
+            return -1;
+        }
+        
+        // 写入文件大小 (8B)
+        if (fwrite(&file->size, sizeof(uint64_t), 1, larc->larcFile) != 1) {
+            perror("文件大小写入失败");
+            return -1;
+        }
+        
+        // 写入文件名长度 (4B)
+        uint32_t nameLength = strlen(file->name);
+        if (fwrite(&nameLength, sizeof(uint32_t), 1, larc->larcFile) != 1) {
+            perror("文件名长度写入失败");
+            return -1;
+        }
+        
+        // 写入文件名
+        if (fwrite(file->name, 1, nameLength, larc->larcFile) != nameLength) {
+            perror("文件名写入失败");
+            return -1;
+        }
+    }
+
+    // 更新列表长度
+    larc->listLength = ftell(larc->larcFile) - larc->listHeaderOffset;
+
+    // 更新文件头信息
+    fseek(larc->larcFile, 20, SEEK_SET); // 文件数量位置
+    if (fwrite(&larc->fileCount, sizeof(uint32_t), 1, larc->larcFile) != 1) {
+        perror("文件头更新失败");
+        return -1;
+    }
+    
+    fseek(larc->larcFile, 24, SEEK_SET); // 总长度位置
+    if (fwrite(&larc->fileTotalLength, sizeof(uint64_t), 1, larc->larcFile) != 1) {
+        perror("文件头更新失败");
+        return -1;
+    }
+    
+    fseek(larc->larcFile, 12, SEEK_SET); // 列表头偏移位置
+    if (fwrite(&larc->listHeaderOffset, sizeof(uint32_t), 1, larc->larcFile) != 1) {
+        perror("文件头更新失败");
+        return -1;
+    }
+    
+    fseek(larc->larcFile, 16, SEEK_SET); // 列表长度位置
+    if (fwrite(&larc->listLength, sizeof(uint32_t), 1, larc->larcFile) != 1) {
+        perror("文件头更新失败");
+        return -1;
+    }
+
     return 0;
 }
 
 /**
- * @brief 打开 LARC 文件
- * 
- * @param filename 文件名
- * @return struct LarcFile* LarcFile 结构体指针
+ * 解包LARC文件到指定目录
+ * @param larc 要解包的LarcFile指针
+ * @param outputDir 输出目录路径
+ * @return 成功返回0，失败返回-1
  */
-struct LarcFile* larc_open(const char* filename) {
-    // 打开文件
-    FILE* file = fopen(filename, "rb+");
-    if (file == NULL) {
-        return NULL;
+int unPackFiles(struct LarcFile* larc, const char* outputDir)
+{
+    if (!larc || !outputDir) {
+        fprintf(stderr, "无效的参数\n");
+        return -1;
     }
-    // 读取文件头
-    char header[4];
-    fread(header, 1, 4, file);
-    // 检查文件头是否正确
-    if (memcmp(header, LARC_HEADER, 4) != 0) {
-        fclose(file);
-        return NULL;
-    }
-    // 分配 LarcFile 结构体内存
-    struct LarcFile* larc_file = malloc(sizeof(struct LarcFile));
-    if (larc_file == NULL) {
-        fclose(file);
-        return NULL;
-    }
-    // 初始化 LarcFile 结构体
-    larc_file->larc_file = file;
-    larc_file->version[0] = 0;
-    larc_file->version[1] = 0;
-    larc_file->version[2] = 0;
-    larc_file->encryption_flag = 0;
-    larc_file->key_length = 0;
-    larc_file->list_header_offset = 0;
-    larc_file->list_length = 0;
-    larc_file->file_count = 0;
-    larc_file->file_total_length = 0;
-    larc_file->file_list = NULL;
-    // 读取文件版本
-    fread(&larc_file->version, 1, 3, file);
-    // 读取加密标志
-    fread(&larc_file->encryption_flag, 1, 1, file);
-    // 读取密钥长度
-    fread(&larc_file->key_length, 1, 4, file);
-    // 读取文件列表头偏移
-    fread(&larc_file->list_header_offset, 1, 4, file);
-    // 读取文件列表长度
-    fread(&larc_file->list_length, 1, 4, file);
-    // 读取文件数量
-    fread(&larc_file->file_count, 1, 4, file);
-    // 读取文件总长度
-    fread(&larc_file->file_total_length, 1, 8, file);
-    // 分配文件列表内存
-    larc_file->file_list = calloc(larc_file->file_count, sizeof(struct FileStruct*));
-    if (larc_file->file_list == NULL) {
-        fclose(file);
-        free(larc_file);
-        return NULL;
-    }
-    // 读取文件列表
-    fseek(file, larc_file->list_header_offset, SEEK_SET);
-    for (uint32_t i = 0; i < larc_file->file_count; ++ i) {
-        larc_file->file_list[i] = malloc(sizeof(struct FileStruct));
-        if (larc_file->file_list[i] == NULL) {
-            fclose(file);
-            free(larc_file);
-            return NULL;
+
+    // 检查文件列表是否已加载
+    if (!larc->fileList) {
+        // 读取文件列表
+        fseek(larc->larcFile, larc->listHeaderOffset, SEEK_SET);
+        
+        larc->fileList = malloc(sizeof(struct FileStruct*) * larc->fileCount);
+        if (!larc->fileList) {
+            perror("内存分配失败");
+            return -1;
         }
-        // 读取文件索引
-        fread(&larc_file->file_list[i]->index, 1, 4, file);
-        // 读取文件偏移
-        fread(&larc_file->file_list[i]->offset, 1, 8, file);
-        // 读取文件大小
-        fread(&larc_file->file_list[i]->size, 1, 8, file);
-        // 循环读取文件名
-        uint32_t name_length = 0;
-        char* name = NULL;
-        name = malloc(1);
-        if (name == NULL) {
-            fclose(file);
-            free(larc_file);
-            for (uint32_t j = 0; j < i; ++ j) {
-                free(larc_file->file_list[j]);
-            }
-            free(larc_file->file_list);
-            return NULL;
-        }
-        while (1) {
-            char c = 0;
-            fread(&c, 1, 1, file);
-            if (c == '\0') {
-                break;
-            }
-            name_length ++;
-            name = realloc(name, name_length + 1);
-            if (name == NULL) {
-                fclose(file);
-                free(larc_file);
-                for (uint32_t j = 0; j < i; ++ j) {
-                    free(larc_file->file_list[j]);
+
+        for (uint32_t i = 0; i < larc->fileCount; i++) {
+            struct FileStruct* fileStruct = malloc(sizeof(struct FileStruct));
+            if (!fileStruct) {
+                perror("内存分配失败");
+                // 清理已分配的内存
+                for (uint32_t j = 0; j < i; j++) {
+                    free(larc->fileList[j]->name);
+                    free(larc->fileList[j]);
                 }
-                free(larc_file->file_list);
-                return NULL;
+                free(larc->fileList);
+                larc->fileList = NULL;
+                return -1;
             }
-            name[name_length - 1] = c;
-        }
-        name[name_length] = '\0';
-        larc_file->file_list[i]->name = name;
-    }
-    // 读取文件列表结束符
-    char footer = 0;
-    fread(&footer, 1, 1, file);
-    if (footer != LARC_FOOTER) {
-        fclose(file);
-        free(larc_file);
-        for (uint32_t j = 0; j < larc_file->file_count; ++ j) {
-            free(larc_file->file_list[j]);
-        }
-        free(larc_file->file_list);
-        return NULL;
-    }
-    return larc_file;
-}
 
-/**
- * @brief 创建 LARC 文件
- * 
- * @param filename 文件名
- * @return struct LarcFile* LarcFile 结构体指针
- */
-struct LarcFile* larc_create(const char* filename) {
-    // 打开文件
-    FILE* file = fopen(filename, "wb");
-    if (file == NULL) {
-        return NULL;
-    }
-    // 写入文件头
-    fwrite(LARC_HEADER, 1, 4, file);
-    // 分配 LarcFile 结构体内存
-    struct LarcFile* larc_file = malloc(sizeof(struct LarcFile));
-    if (larc_file == NULL) {
-        fclose(file);
-        return NULL;
-    }
-    // 初始化 LarcFile 结构体
-    larc_file->larc_file = file;
-    larc_file->version[0] = LARC_DEFAULT_VERSION[0];
-    larc_file->version[1] = LARC_DEFAULT_VERSION[1];
-    larc_file->version[2] = LARC_DEFAULT_VERSION[2];
+            // 读取文件索引
+            if (fread(&fileStruct->index, sizeof(uint32_t), 1, larc->larcFile) != 1) {
+                perror("文件索引读取失败");
+                free(fileStruct);
+                for (uint32_t j = 0; j < i; j++) {
+                    free(larc->fileList[j]->name);
+                    free(larc->fileList[j]);
+                }
+                free(larc->fileList);
+                larc->fileList = NULL;
+                return -1;
+            }
 
-    larc_file->encryption_flag = 0;
-    larc_file->key_length = 0;
-    larc_file->list_header_offset = 0;
-    larc_file->list_length = 0;
-    larc_file->file_count = 0;
-    larc_file->file_total_length = 0;
-    larc_file->file_list = NULL;
-    // 写入文件版本
-    fwrite(&larc_file->version, 1, 3, file);
-    // 写入加密标志
-    fwrite(&larc_file->encryption_flag, 1, 1, file);
-    // 写入密钥长度
-    fwrite(&larc_file->key_length, 1, 4, file);
-    // 写入文件列表头偏移
-    fwrite(&larc_file->list_header_offset, 1, 4, file);
-    // 写入文件列表长度
-    fwrite(&larc_file->list_length, 1, 4, file);
-    // 写入文件数量
-    fwrite(&larc_file->file_count, 1, 4, file);
-    // 写入文件总长度
-    fwrite(&larc_file->file_total_length, 1, 8, file);
-    // 写入文件列表结束符
-    char footer = LARC_FOOTER;
-    fwrite(&footer, 1, 1, file);
-    // 刷新文件缓冲区
-    fflush(file);
-    return larc_file;
+            // 读取文件偏移
+            if (fread(&fileStruct->offset, sizeof(uint64_t), 1, larc->larcFile) != 1) {
+                perror("文件偏移读取失败");
+                free(fileStruct);
+                for (uint32_t j = 0; j < i; j++) {
+                    free(larc->fileList[j]->name);
+                    free(larc->fileList[j]);
+                }
+                free(larc->fileList);
+                larc->fileList = NULL;
+                return -1;
+            }
+
+            // 读取文件大小
+            if (fread(&fileStruct->size, sizeof(uint64_t), 1, larc->larcFile) != 1) {
+                perror("文件大小读取失败");
+                free(fileStruct);
+                for (uint32_t j = 0; j < i; j++) {
+                    free(larc->fileList[j]->name);
+                    free(larc->fileList[j]);
+                }
+                free(larc->fileList);
+                larc->fileList = NULL;
+                return -1;
+            }
+
+            // 读取文件名长度
+            uint32_t nameLength;
+            if (fread(&nameLength, sizeof(uint32_t), 1, larc->larcFile) != 1) {
+                perror("文件名长度读取失败");
+                free(fileStruct);
+                for (uint32_t j = 0; j < i; j++) {
+                    free(larc->fileList[j]->name);
+                    free(larc->fileList[j]);
+                }
+                free(larc->fileList);
+                larc->fileList = NULL;
+                return -1;
+            }
+
+            // 读取文件名
+            fileStruct->name = malloc(nameLength + 1);
+            if (!fileStruct->name) {
+                perror("内存分配失败");
+                free(fileStruct);
+                for (uint32_t j = 0; j < i; j++) {
+                    free(larc->fileList[j]->name);
+                    free(larc->fileList[j]);
+                }
+                free(larc->fileList);
+                larc->fileList = NULL;
+                return -1;
+            }
+
+            if (fread(fileStruct->name, 1, nameLength, larc->larcFile) != nameLength) {
+                perror("文件名读取失败");
+                free(fileStruct->name);
+                free(fileStruct);
+                for (uint32_t j = 0; j < i; j++) {
+                    free(larc->fileList[j]->name);
+                    free(larc->fileList[j]);
+                }
+                free(larc->fileList);
+                larc->fileList = NULL;
+                return -1;
+            }
+            fileStruct->name[nameLength] = '\0';
+
+            larc->fileList[i] = fileStruct;
+        }
+    }
+
+    // 创建输出目录（跨平台兼容）
+    mkdir(outputDir, 0755);
+
+    // 逐个提取文件
+    for (uint32_t i = 0; i < larc->fileCount; i++) {
+        struct FileStruct* file = larc->fileList[i];
+        
+        // 构建输出文件路径（跨平台路径分隔符）
+        char outputPath[512];
+        #ifdef _WIN32
+            snprintf(outputPath, sizeof(outputPath), "%s\\%s", outputDir, file->name);
+        #else
+            snprintf(outputPath, sizeof(outputPath), "%s/%s", outputDir, file->name);
+        #endif
+
+        // 创建输出文件
+        FILE* outputFile = fopen(outputPath, "wb");
+        if (!outputFile) {
+            perror("无法创建输出文件");
+            fprintf(stderr, "文件: %s\n", outputPath);
+            return -1;
+        }
+
+        // 定位到文件数据位置
+        fseek(larc->larcFile, file->offset, SEEK_SET);
+
+        // 读取并写入文件数据
+        uint8_t buffer[4096];
+        uint64_t remaining = file->size;
+        
+        while (remaining > 0) {
+            size_t toRead = remaining > sizeof(buffer) ? sizeof(buffer) : remaining;
+            size_t bytesRead = fread(buffer, 1, toRead, larc->larcFile);
+            
+            if (bytesRead == 0) {
+                perror("文件读取失败");
+                fclose(outputFile);
+                return -1;
+            }
+
+            if (fwrite(buffer, 1, bytesRead, outputFile) != bytesRead) {
+                perror("文件写入失败");
+                fclose(outputFile);
+                return -1;
+            }
+
+            remaining -= bytesRead;
+        }
+
+        fclose(outputFile);
+        printf("已提取文件: %s\n", outputPath);
+    }
+
+    return 0;
 }

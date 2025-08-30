@@ -1,4 +1,3 @@
-# pragma once
 /*
 用于处理 light archive 文件(.larc)的 C 语言免费公开工具 API
 @author: Michael-Hardy-241111
@@ -22,7 +21,7 @@
     9.2. 文件偏移(8Bytes);
     9.3. 文件长度(8Bytes);
     9.4. 文件名(变长), 到第一个'\0'结束;
-10. 内部文件数据, 每个内部文件的偏移和位置已在列表定义, 修改此部分时需要同时修改列表&'7. 内部文件数量(4Bytes)'&'8. 内部文件的总长度(8Bytes)';
+10. 内部文件数据, 每个内部文件的偏移和位置已在列表定义, 修改此部分时需要同时修改列表、内部文件数量(4Bytes)、内部文件的总长度(8Bytes);
 11. 额外指定的防伪数据(变长), 以'\x03'(ETX)结尾, 也表示文件结束
 
 使用说明
@@ -32,3 +31,27 @@
 本工具在代码托管平台开源, 任何人都可以提出问题和建议, 链接如下:
 > Github (https://github.com/Michael-Hardy-241111/Light-Archive)
 */
+
+#ifndef __LARC_H
+#define __LARC_H
+
+// 跨平台动态链接库导出声明
+#ifdef _WIN32
+    #ifdef LARC_EXPORTS
+        #define LARC_API __declspec(dllexport)
+    #else
+        #define LARC_API __declspec(dllimport)
+    #endif
+#else
+    #define LARC_API __attribute__((visibility("default")))
+#endif
+
+struct LarcFile;
+
+LARC_API struct LarcFile* larcCreate(const char* fileName);
+LARC_API struct LarcFile* larcOpen(const char* fileName);
+LARC_API void larcClose(struct LarcFile* larc);
+LARC_API int packFiles(struct LarcFile* larc, const char** fileNames, int fileCount);
+LARC_API int unPackFiles(struct LarcFile* larc, const char* outputDir);
+
+#endif

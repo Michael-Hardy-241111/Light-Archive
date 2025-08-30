@@ -36,6 +36,10 @@
 # 导入模块
 import os
 import warnings
+import sys
+
+if sys.version_info < (3, 6):
+    raise RuntimeError("需要Python 3.6或更高版本")
 
 # 定义常量
 LARC_FILE_HEADER:bytes = b'LARC'		# 文件头
