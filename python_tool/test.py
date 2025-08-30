@@ -12,7 +12,7 @@ larc = LarcFile()
 # 创建新的LARC文件
 try:
     # 打包文件
-    larc.create_file("c:\\Users\\micha\\Documents\\Code\\Light Archive\\test_folder\\test_file.larc")
+    larc.open_file("c:\\Users\\micha\\Documents\\Code\\Light Archive\\test_folder\\test_file.larc")
     
     # 获取要打包的文件列表
     packed_files = [

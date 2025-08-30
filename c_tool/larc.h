@@ -1,1 +1,58 @@
+/*
+用于处理 light archive 文件(.larc)的 C 语言免费公开工具 API
+@author: Michael-Hardy-241111
+@version: 0.2.0
+@date: 2025-08-20
+@license: MIT
+
+技术说明
+文件内的数据顺序为:
+1. 文件头(4Bytes);
+2. 版本号(3Bytes), {修订版本号, 次版本号, 主版本号};
+3. 加密/压缩标志(1Byte);
+4. 密钥长度(4Bytes), 对应密钥长度在 0 ~ 4,294,967,295(2^32-1) 之间;
+5. 列表头偏移(4Bytes);
+6. 列表长度(4Bytes);
+7. 内部文件数量(4Bytes);
+8. 内部文件的总长度(8Bytes);
+// 上面共计 32 Bytes, 固定长度部分
+9. 列表, 标记每个内部文件的存储信息
+    9.1. 序号(4Bytes);
+    9.2. 文件偏移(8Bytes);
+    9.3. 文件长度(8Bytes);
+    9.4. 文件名(变长), 到第一个'\0'结束;
+10. 内部文件数据, 每个内部文件的偏移和位置已在列表定义, 修改此部分时需要同时修改列表、内部文件数量(4Bytes)、内部文件的总长度(8Bytes);
+11. 额外指定的防伪数据(变长), 以'\x03'(ETX)结尾, 也表示文件结束
+
+使用说明
+任何人都可以免费使用本工具, 也可以修改代码, 使工具符合自己的需求.
+本工具不限制任何人下载, 传播时禁止收费, 请保证 Light Archive 社区的纯净.
+如果要在任何平台(包括线上和线下)公开本工具, 请声明原作者, 保留原作者的信息, 维护原作者的权益.
+本工具在代码托管平台开源, 任何人都可以提出问题和建议, 链接如下:
+> Github (https://github.com/Michael-Hardy-241111/Light-Archive)
+*/
+
 #pragma once
+#ifndef __LARC_H
+#define __LARC_H
+
+// 跨平台动态链接库导出声明
+#ifdef _WIN32
+    #ifdef LARC_EXPORTS
+        #define LARC_API __declspec(dllexport)
+    #else
+        #define LARC_API __declspec(dllimport)
+    #endif
+#else
+    #define LARC_API __attribute__((visibility("default")))
+#endif
+
+struct LarcFile;
+
+LARC_API struct LarcFile* larcCreate(const char* fileName);
+LARC_API struct LarcFile* larcOpen(const char* fileName);
+LARC_API void larcClose(struct LarcFile* larc);
+LARC_API int packFiles(struct LarcFile* larc, const char** fileNames, int fileCount);
+LARC_API int unPackFiles(struct LarcFile* larc, const char* outputDir);
+
+#endif

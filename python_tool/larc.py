@@ -2,8 +2,8 @@
 """
 用于处理 light archive 文件(.larc)的 Python 免费公开工具 API
 @author: Michael-Hardy-241111
-@version: 0.1.0
-@date: 2025-08-10
+@version: 0.2.0
+@date: 2025-08-20
 @license: MIT
 
 技术说明
@@ -35,10 +35,16 @@
 
 # 导入模块
 import os
+import warnings
+import sys
+
+if sys.version_info < (3, 6):
+    raise RuntimeError("需要Python 3.6或更高版本")
 
 # 定义常量
 LARC_FILE_HEADER:bytes = b'LARC'		# 文件头
 LARC_DEFAULT_FOOTER:bytes = b'\x03'	    # 文件结束标识
+LARC_DEFAULT_VERSION:bytearray = bytearray([0, 2, 0])  # 默认版本号 [修订版本号, 次版本号, 主版本号]
 
 class FileStruct:
     """
@@ -206,8 +212,7 @@ class LarcFile:
             larc_file: 文件对象
             file_list: 文件结构列表
         """
-        self.file_path:str = ''											# 文件路径
-        self.file_header:bytes = LARC_FILE_HEADER						# 文件头
+        self.file_path:str = ''										# 文件路径
         self.version:bytearray = bytearray(3)						# 版本号
         self.encryption_flag:bytearray = bytearray(1)				# 加密/压缩标志
         self.key_length:bytearray = bytearray(4)					# 密钥长度
@@ -242,14 +247,14 @@ class LarcFile:
         """
         self.file_path = file_path
         self.larc_file = open(file_path, 'wb+')
-        self.version = bytearray([0, 1, 0])						    # 版本号
-        self.encryption_flag = bytearray([0])						    # 加密/压缩标志
-        self.key_length = bytearray([0, 0, 0, 0])					    # 密钥长度
+        self.version = LARC_DEFAULT_VERSION						    # 版本号
+        self.encryption_flag = bytearray([0])						# 加密/压缩标志
+        self.key_length = bytearray([0, 0, 0, 0])					# 密钥长度
         self.list_header_offset = bytearray([0, 0, 0, 0])		    # 列表头偏移
         self.list_length = bytearray([0, 0, 0, 0])				    # 列表长度
         self.file_count = bytearray([0, 0, 0, 0])				    # 内部文件数量
-        self.file_total_length = bytearray([0, 0, 0, 0, 0, 0, 0, 0])    # 内部文件的总长度
-        self.larc_file.write(self.file_header)
+        self.file_total_length = bytearray([0, 0, 0, 0, 0, 0, 0, 0])# 内部文件的总长度
+        self.larc_file.write(LARC_FILE_HEADER)
         self.larc_file.write(self.version)
         self.larc_file.write(self.encryption_flag)
         self.larc_file.write(self.key_length)
@@ -279,6 +284,17 @@ class LarcFile:
         if self.file_header != LARC_FILE_HEADER:
             raise Exception('文件头错误')
         self.version = bytearray(self.larc_file.read(3))
+        # 检查版本
+        tool_version = LARC_DEFAULT_VERSION  # 当前工具版本 [修订版本号, 次版本号, 主版本号]
+        file_major = self.version[2]
+        tool_major = tool_version[2]
+        file_minor = self.version[1]
+        tool_minor = tool_version[1]
+        
+        if file_major != tool_major:
+            raise Exception(f'主版本号不匹配，文件主版本号为 {file_major}，工具主版本号为 {tool_major}，无法继续处理')
+        if file_minor != tool_minor:
+            warnings.warn(f'次版本号不匹配，文件次版本号为 {file_minor}，工具次版本号为 {tool_minor}，可能存在兼容性问题，继续执行')
         self.encryption_flag = bytearray(self.larc_file.read(1))
         self.key_length = bytearray(self.larc_file.read(4))
         self.list_header_offset = bytearray(self.larc_file.read(4))
