@@ -1,4 +1,4 @@
-# powerful-escape
+# light-archive
 
 ### Languages
 
@@ -7,48 +7,24 @@
 
 ## en-us
 
-More powerful escape characters.
-
-### Project Information
-
-**Basic Information**
-
-- Project Name: powerful-escape
-- Project Description: More powerful escape characters.
-- Author: Michael-Hardy-241111
-- Version: 0.1.0
-- License: MIT
-
-**Project Repository**
-
-- Github Repository: [https://github.com/Michael-Hardy-241111/powerful-escape](https://github.com/Michael-Hardy-241111/powerful-escape)
-
-**[License](./LICENSE) (MIT)**
-
-### Project Introduction
-
-> No detailed description available
-
 ## zh-hans
 
-更强大的转义字符。
+一个文件容器，后缀名为.larc。
 
 ### 项目信息
 
-**基本信息**
-
-- 项目名称: powerful-escape
-- 项目描述: 更强大的转义字符。
+- 项目名称: light-archive
+- 项目描述: A file container with the file extension .larc. 一个文件容器，后缀名为.larc。
 - 作者: Michael-Hardy-241111
 - 版本: 0.1.0
 - 许可证: MIT
 
-**项目仓库**
+### 项目仓库
 
-- Github 仓库: [https://github.com/Michael-Hardy-241111/powerful-escape](https://github.com/Michael-Hardy-241111/powerful-escape)
+- [Github 仓库](https://github.com/Michael-Hardy-241111/light-archive)
 
-**[许可证](./LICENSE) (MIT)**
+### 附件
 
-### 项目介绍
-
-> 暂无详细介绍
+- [许可证](./LICENSE)
+- [数据结构](./information/zh-hans/data_struct.md)
+- [版本列表](./information/zh-hans/release_list.md)
